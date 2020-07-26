@@ -1,0 +1,15 @@
+/**************FileMain******************
+This will call the functions the order it needs 
+to in order to construct the GUI and functions and 
+put them together 
+ ****************************************/
+public class FileBackupMain extends FileBackupFunctions{
+
+	public static void main(String[] args) {
+		//Calls the function to create the window
+		windowGUI();
+		
+		timer();
+	}
+
+}
