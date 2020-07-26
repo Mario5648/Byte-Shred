@@ -1,0 +1,337 @@
+import java.awt.Color;
+
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+
+import javax.swing.*;
+
+
+/***************************************
+ * The purpose of this class is to find
+ * the file the user wants to delete
+ ***************************************/
+public class FileDeleteGetFile {
+	//File directory of the targeting file
+	String fileDir;
+	//This file is the targeting file
+	File file;
+	//This file is the corrupted file that will be deleted   
+	File file2;
+	/*This will get the location of the file that wants to be deleted*/
+	
+	
+	
+	//the directory of the wanting deleted folder
+	String dir;
+	//file directory
+	File folder;
+	//original file
+	File dirFile;
+	//file to use to corrupt   
+	File dirFile2;
+	//Array list to store file names
+	ArrayList<String> fileNames = new ArrayList<String>();
+	
+	//color for the progress window
+	Color windowBackColor = new Color(41,45,50);
+
+	
+	
+	JPanel panel = new JPanel();
+
+	
+	//text area that will show the progress of the deletion
+	JTextArea log = new JTextArea();
+	
+	JScrollPane scroll = new JScrollPane(log);
+
+	
+	/*This will get the location of the file that wants to be deleted*/
+	public void findFile() {
+		/*This button once clicked gets the name of the direct path of the file*/
+		JButton open = new JButton();
+		/*This creates the GUI of the FileChooser*/
+		JFileChooser fc = new JFileChooser();
+		/*Start directory is set to the C:\ drive */
+		fc.setCurrentDirectory(new java.io.File("C:\\"));
+		fc.setDialogTitle("Choose A File To Delete");
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		if(fc.showOpenDialog(open) == JFileChooser.APPROVE_OPTION) {
+			/*File directory is saved to the fileDir string*/
+			fileDir = fc.getSelectedFile().getAbsolutePath();
+			System.out.println(fileDir);
+		//If the JFileChooser is closed then it will not delete selected path	
+		}else{
+			fileDir = null;
+			System.out.println("No File Selected");
+		}
+		
+		
+	}
+	
+	
+	
+	/*This function gets the file name*/
+	public String getFileName() {
+		String fileName = null;
+		for(int i = fileDir.length()-1 ; i>=0;i--){
+			if(fileDir.charAt(i) == '\\'){
+				fileName = fileDir.substring(i+1, fileDir.length());
+				break;
+			}
+		}
+		return fileName;
+	}
+	
+	
+	/*This will get the previous directories that leads to the file*/
+	public String parentDir() {
+		String fileParentDir = null;
+		for(int i = fileDir.length()-1 ; i>=0;i--){
+			if(fileDir.charAt(i) == '\\'){
+				fileParentDir = fileDir.substring(0, i);
+				break;
+			}
+		}
+		return fileParentDir;
+	}
+ 
+	/*This converts the file to the .txt by using the directory of the targeting file*/
+	public void convertFile() throws FileNotFoundException, UnsupportedEncodingException {
+		char[] alphabet_Numbers = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
+		String line = "";
+		for(int i =0;i<10;i++) {
+			line += alphabet_Numbers[(int) (Math.random()*36)];
+			
+		}
+		file = new File(fileDir);
+		file2 = new File(parentDir()+"\\"+line+".txt");
+		file.renameTo(file2);
+		System.out.println(file.getName());
+		clearFile();
+		clearFile2();
+	}
+	
+	/*Algorithm that will fill the text file with random letters*/
+	public void clearFile() throws FileNotFoundException, UnsupportedEncodingException {
+		PrintWriter writer = new PrintWriter(file2, "UTF-8");
+		char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+		String line = "";
+		int count = 0;
+		for(int i =0;i<200;i++) {
+			line += alphabet[(int) (Math.random()*26)];
+			if(i==199) {
+				writer.println(line);
+				i =0;
+				count++;
+			}
+			if(count == 100) {
+				break;
+			}
+		}
+		writer.close();
+	}
+	
+	/*This will clear everything inside the file*/
+	public void clearFile2() throws FileNotFoundException, UnsupportedEncodingException {
+		PrintWriter writer = new PrintWriter(file2, "UTF-8");
+		writer.print("");
+		writer.close();
+	}
+	
+	
+	/*This function deletes the file that was corrupted*/
+	public void deleteFile() 
+	{
+		String dFile = file2.getAbsolutePath();
+		 File file = new File(dFile); 
+	        if(file.delete()) 
+	        { 
+	            System.out.println("File deleted successfully"); 
+	        } 
+	        else
+	        { 
+	            System.out.println("Failed to delete the file"); 
+	        } 	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*The following code will be for directories (Folders)*/
+	public void findFolder() {
+		/*This button once clicked gets the name of the direct path of the Directory*/
+		JButton open = new JButton("Delete");
+		/*This creates the GUI of the FileChooser*/
+		JFileChooser fc = new JFileChooser();
+		/*Start directory is set to the C:\ drive */
+		fc.setCurrentDirectory(new java.io.File("C:\\"));
+		fc.setDialogTitle("Choose A Folder To Delete");
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if(fc.showOpenDialog(open) == JFileChooser.APPROVE_OPTION) {
+			/*File directory is saved to the fileDir string*/
+			dir = fc.getSelectedFile().getAbsolutePath();
+			folder = fc.getSelectedFile().getAbsoluteFile();
+			System.out.println(dir);
+		//If the JFileChooser is closed then it will not delete selected path	
+		}else{
+			dir = null;
+			folder = null;
+			System.out.println("No File Selected");
+		}
+	
+		
+		
+	}
+	/*This will read all of the files in the folder */
+	public void readFiles() {
+		
+		File[] files = folder.listFiles();
+        
+        for (File file : files) 
+        {
+            fileNames.add(file.getName());
+            System.out.println(file.getName());
+        }
+	}
+	
+	/*This window will display the text area and show the progress and update the live feed*/
+	public void progressWindow(){
+		JFrame frame = new JFrame();
+		
+		/*This is used to center the program on the user's screen*/
+		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2.3);
+		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2.5);
+		frame.setLocation(x, y);
+		frame.setTitle("Progress");
+		/*Sets the frame nonResizble and sets the size*/
+		frame.setSize(500, 400);
+		frame.setResizable(false);
+		
+		/*This is used to set the icon to the window*/
+		ImageIcon icon = new ImageIcon("C:\\Users\\Mario\\Desktop\\ShredderWinIcon.png");
+		frame.setIconImage(icon.getImage());
+		
+		
+		
+		/*This creates the pane where the other objects will be added to*/
+		frame.add(panel);
+		/*no layout style*/
+		panel.setLayout(null);
+		/*This sets the color of the pane*/
+		panel.setBackground(windowBackColor);
+		
+		
+		
+		JLabel label = new JLabel();
+		label.setText("Progress");
+		label.setBounds(20, 20, 100, 30);
+		label.setForeground(Color.WHITE);
+		label.setFont(new Font("Serif", Font.BOLD, 14));
+		panel.add(label);
+		
+		
+		/*This is the text area that is scrollable*/
+	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+		log.setEditable(false);
+		log.setLineWrap(true);
+		log.setVisible(true);
+		scroll.setBounds(20, 50, 400, 300);
+		panel.add(scroll);
+		frame.setVisible(true);
+		
+		
+	}
+	/*Function that will turn the file into a .txt file*/
+	public void convertFiles() throws FileNotFoundException, UnsupportedEncodingException {
+		char[] alphabet_Numbers = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
+		String line = "";
+		for(int i =0;i<10;i++) {
+			line += alphabet_Numbers[(int) (Math.random()*36)];
+			
+		}
+		
+		
+		/*Calls the progressWindow to construct the window*/
+		progressWindow();
+		panel.update(panel.getGraphics());
+		
+		//This loop calls each file and clears it one by one 
+		for(int i =0; i<fileNames.size();i++) {
+			dirFile = new File(dir+"\\"+fileNames.get(i));
+			dirFile2 = new File(dir+"\\"+line+i+".txt");
+			dirFile.renameTo(dirFile2);
+			//Calls the first algorithm
+			clearFiles();
+			//Calls the second algorithm
+			clearFiles2();
+
+			String dFile = dirFile2.getAbsolutePath();
+			File file = new File(dFile); 
+			if(file.delete()) { 
+			System.out.println("File "+ fileNames.get(i)+" deleted successfully");
+			//Updates the text area 
+			log.append(fileNames.get(i)+" has been deleted successfully \n");
+			log.update(log.getGraphics());
+
+			}else { 
+			System.out.println("Failed to delete file");
+			//Updates the text area 
+
+			log.append("Failed to delete file \n");
+			log.update(log.getGraphics());
+			}
+		}
+		//Once everything is done it will delete the folder as well
+		folder.delete();
+		//Updates the text area 
+		log.append("FINISHED DELETING FOLDER \n");
+		log.update(log.getGraphics());
+	}
+	
+	
+	/*Algorithm that will fill the text file with random letters*/
+
+	public void clearFiles() throws FileNotFoundException, UnsupportedEncodingException {
+		PrintWriter writer = new PrintWriter(dirFile2, "UTF-8");
+		char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+		String line = "";
+		int count = 0;
+		for(int i =0;i<200;i++) {
+			line += alphabet[(int) (Math.random()*26)];
+			if(i==199) {
+				writer.println(line);
+				i =0;
+				count++;
+			}
+			if(count == 100) {
+				break;
+			}
+		}
+		writer.close();
+	}
+	
+	/*Clears the .txt files*/
+	public void clearFiles2() throws FileNotFoundException, UnsupportedEncodingException {
+		PrintWriter writer = new PrintWriter(dirFile2, "UTF-8");
+		writer.print("");
+		writer.close();
+	}
+	
+}

@@ -1,0 +1,185 @@
+/************************************************
+             *VIRTUAL SHREDDER*
+             *Current Version: 2.3
+             *Developed by: Mario De Jesus
+             
+Purpose: The purpose of the application is to safely
+delete the files by corrupting the file making it 
+unrecoverable. 
+************************************************/
+
+
+
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+
+import java.io.UnsupportedEncodingException;
+
+import javax.swing.*;
+
+
+/*This class creates the GUI for the virtual journal*/
+
+
+public class ByteShred extends FileDeleteGetFile {
+
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+		
+		/*These are the all the colors being used*/
+		Color windowBackColor = new Color(41,45,50);
+		Color selectButtonBackColor = new Color(14,92,125);
+		
+		
+		
+		
+		
+		/*Creates the main frame*/
+		JFrame frame = new JFrame();
+		
+		/*This is used to center the program on the user's screen*/
+		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (int) ((dimension.getWidth() - frame.getWidth()) / 2.3);
+		int y = (int) ((dimension.getHeight() - frame.getHeight()) / 2.5);
+		frame.setLocation(x, y);
+		frame.setTitle("Byte-Shred");
+		/*Sets the frame nonResizble and sets the size*/
+		frame.setSize(300, 400);
+		frame.setResizable(false);
+		
+		/*This is used to set the icon to the window*/
+		Image icon = new ImageIcon(ByteShred.class.getResource("\\ShredderWinIcon.png")).getImage();
+		frame.setIconImage(icon);
+		
+		
+		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+		
+		/*This creates the pane where the other objects will be added to*/
+		JPanel panel = new JPanel();
+		frame.add(panel);
+		/*no layout style*/
+		panel.setLayout(null);
+		/*This sets the color of the pane*/
+		panel.setBackground(windowBackColor);
+
+		
+		JButton selectFileB = new JButton();
+		panel.add(selectFileB);
+		selectFileB.setText("Find File To Delete");
+		/*changes the font style of the text inside the button*/
+		selectFileB.setFont(new Font("Serif", Font.BOLD, 14));
+		/*sets background color for the button*/
+		selectFileB.setBackground(selectButtonBackColor);
+		
+		
+		/*This hides the black text box from the text*/
+		selectFileB.setFocusPainted(false);
+		
+		/*sets the text color of the button*/
+		selectFileB.setForeground(Color.WHITE);
+		
+		selectFileB.setBounds(50, 50, 200, 50);
+		
+		/*Allows the button to open the file search*/
+		selectFileB.addActionListener(new selectFile());
+		
+		
+		JButton selectFolderB = new JButton();
+		panel.add(selectFolderB);
+		selectFolderB.setText("Find Folder To Delete");
+		/*changes the font style of the text inside the button*/
+		selectFolderB.setFont(new Font("Serif", Font.BOLD, 14));
+		/*sets background color for the button*/
+		selectFolderB.setBackground(selectButtonBackColor);
+		
+		
+		/*This hides the black text box from the text*/
+		selectFolderB.setFocusPainted(false);
+		
+		/*sets the text color of the button*/
+		selectFolderB.setForeground(Color.WHITE);
+		
+		selectFolderB.setBounds(50, 200, 200, 50);
+		
+		/*Allows the button to open the file search*/
+		selectFolderB.addActionListener(new selectFolder());
+		
+		
+		/*Label that will display the current version of the application*/
+		JLabel versionLabel = new JLabel();
+		panel.add(versionLabel);
+		versionLabel.setText("Version 2.3");
+		versionLabel.setForeground(Color.WHITE);
+		versionLabel.setBounds(10, 340, 100, 30);
+		
+		
+		
+		/*This renders all of the GUI*/
+		frame.setVisible(true);
+		
+		
+		
+		
+		/*This UIManager changes the look to the fileChooser window*/
+		try { 
+		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		
+	}
+	
+	
+	/*When the selectFileB button is pressed then it will run the following code
+	 * This class extends to the "FileDeleteGetFile" so it can run the functions from the 
+	 * class instead of having to create a new object*/
+	public static class selectFile extends FileDeleteGetFile implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			
+			/*Allows the user to search for file*/
+			findFile();
+			/*Converts the file into .txt and will also delete all the text inside the file*/
+			try {
+			convertFile();
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			/*This will delete the file*/
+			deleteFile();
+		}
+		
+	}
+	
+	public static class selectFolder extends FileDeleteGetFile implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			
+			/*Allows the user to search for file*/
+			findFolder();
+			
+			/*This will call the function to read all the files in the folder*/
+			readFiles();
+			/*Converts the file into .txt and will also delete all the text inside the file*/
+			try {
+			convertFiles();
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+		}
+		
+	}
+}
